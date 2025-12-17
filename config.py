@@ -9,10 +9,13 @@ CAMERA_HEIGHT = 480
 FPS = 30
 
 # AI Model Settings
-USE_AI_MODEL = True  # Enable/Disable AI detection
-AI_MODEL_PATH = None  # None = use pre-trained YOLOv8, or path to custom trained model
+# ⚠️ IMPORTANT: Pre-trained YOLOv8 does NOT have fire classes!
+# For AI detection to work, you MUST train a custom model and set AI_MODEL_PATH
+# OR set USE_AI_MODEL = False to use CV-only mode (recommended for first-time users)
+USE_AI_MODEL = False  # Enable/Disable AI detection (set False until you have a custom trained model)
+AI_MODEL_PATH = None  # Path to custom trained YOLOv8 model (train your own for fire detection)
 AI_CONFIDENCE_THRESHOLD = 0.5  # Minimum confidence for AI detection (0.0 - 1.0)
-USE_HYBRID_MODE = True  # Use both AI and CV (True) or AI only (False)
+USE_HYBRID_MODE = False  # Use both AI and CV (True) or CV only (False). Set True when you have custom model
 
 # Traditional Computer Vision Settings
 FIRE_DETECTION_THRESHOLD = 0.5  # Sensitivity for fire detection (0.0 - 1.0)

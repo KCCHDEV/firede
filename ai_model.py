@@ -82,20 +82,27 @@ class AIFireDetector:
                     class_name = result.names[class_id].lower()
                     confidence = float(box.conf[0])
                     
-                    # Check if it's fire-related (fire, smoke, flames)
-                    # For pre-trained YOLO, we might detect "fire hydrant" or custom classes
-                    # In a production system, you'd use a custom trained model
+                    # ⚠️ IMPORTANT: Standard YOLOv8 pre-trained models (yolov8n.pt) do NOT
+                    # have fire detection classes. This code is designed for CUSTOM TRAINED models.
                     # 
-                    # NOTE: Standard YOLOv8 pre-trained models don't have fire detection classes.
-                    # This is a placeholder for custom trained models. For production use,
-                    # train a custom model with fire dataset and set AI_MODEL_PATH in config.
+                    # To use AI detection effectively:
+                    # 1. Train a custom YOLOv8 model with fire/smoke/flame classes
+                    # 2. Set AI_MODEL_PATH in config.py to your custom model path
+                    # 3. The model will then detect fire using the trained classes
+                    # 
+                    # Until you have a custom model, it's recommended to:
+                    # - Set USE_AI_MODEL = False in config.py
+                    # - Use CV-only detection (which works out of the box)
+                    
                     if confidence >= self.confidence_threshold:
                         # Check if class name contains fire-related keywords
+                        # This will only work with custom trained models that have these classes
                         fire_keywords = ['fire', 'smoke', 'flame']
                         if any(keyword in class_name.lower() for keyword in fire_keywords):
                             x1, y1, x2, y2 = box.xyxy[0].cpu().numpy().astype(int)
                             fire_boxes.append((x1, y1, x2, y2))
                             fire_confidences.append(confidence)
+                            logging.info(f"AI detected fire: class='{class_name}', confidence={confidence:.2f}")
             
             fire_detected = len(fire_boxes) > 0
             return fire_detected, fire_boxes, fire_confidences

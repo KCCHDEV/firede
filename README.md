@@ -2,11 +2,20 @@
 
 ระบบตรวจจับไฟแบบ Real-time โดยใช้กล้องคอมพิวเตอร์, Computer Vision และ **AI/Deep Learning**
 
+## ⚠️ Important Notes
+
+**AI Detection Requirement**: Pre-trained YOLOv8 models do NOT include fire detection classes. The system works out-of-the-box with **Computer Vision (CV) detection only**. For AI-based detection, you need to:
+1. Train a custom YOLOv8 model with fire dataset (see Training section)
+2. Set `AI_MODEL_PATH` in config.py to your trained model
+3. Or set `USE_AI_MODEL = False` to use CV-only mode
+
+**Recommendation for First-Time Users**: Start with CV-only mode by setting `USE_AI_MODEL = False` in config.py. The CV detection works immediately without any additional setup.
+
 ## ✨ Features
 
-- 🤖 **AI-based Detection**: ใช้ YOLOv8 และ Deep Learning สำหรับตรวจจับไฟ
+- 🤖 **AI-based Detection**: ใช้ YOLOv8 และ Deep Learning สำหรับตรวจจับไฟ (requires custom trained model)
 - 🔍 ตรวจจับไฟแบบ Real-time จากกล้องคอมพิวเตอร์
-- 🎨 ใช้ Color-based detection และ Motion analysis
+- 🎨 ใช้ Color-based detection และ Motion analysis (works out-of-the-box)
 - 🔄 **Hybrid Mode**: รวม AI และ Traditional CV เพื่อความแม่นยำสูงสุด
 - 🚨 ระบบแจ้งเตือน (เสียงและภาพ)
 - 📹 บันทึกวิดีโออัตโนมัติเมื่อตรวจพบไฟ
