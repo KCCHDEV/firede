@@ -128,7 +128,7 @@ class AlertSystem:
         
         # Draw alert text
         alert_text = "🔥 FIRE DETECTED! 🔥"
-        font = cv2.FONT_HERSHEY_BOLD
+        font = cv2.FONT_HERSHEY_DUPLEX  # Using DUPLEX for bold appearance
         font_scale = 1.5
         thickness = 3
         
