@@ -49,9 +49,11 @@ class FireDetectionSystem:
         
         logging.info("Fire Detection System initialized")
         
-        # Send startup notification
-        if config.TELEGRAM_ENABLED:
+        # Send startup notification (only if Telegram is enabled and connected)
+        if self.telegram.enabled:
             self.telegram.send_message("🔥 <b>Fire Detection System Started</b>\n\nSystem is now monitoring for fire...")
+        elif config.TELEGRAM_ENABLED:
+            logging.info("Telegram notifications configured but connection failed - continuing without Telegram")
     
     
     def _setup_logging(self):

@@ -39,6 +39,13 @@ class TelegramNotifier:
             else:
                 logging.error(f"Telegram bot test failed: {response.status_code}")
                 return False
+        except requests.exceptions.ConnectionError as e:
+            logging.warning("Cannot connect to Telegram API. Check your internet connection.")
+            logging.debug(f"Connection error details: {e}")
+            return False
+        except requests.exceptions.Timeout:
+            logging.warning("Telegram connection timeout. Check your network.")
+            return False
         except Exception as e:
             logging.error(f"Failed to connect to Telegram: {e}")
             return False
@@ -80,8 +87,14 @@ class TelegramNotifier:
                 logging.error(f"Failed to send Telegram message: {response.status_code}")
                 return False
                 
+        except requests.exceptions.ConnectionError:
+            logging.warning("Cannot send Telegram message: No internet connection")
+            return False
+        except requests.exceptions.Timeout:
+            logging.warning("Telegram message timeout: Network is slow")
+            return False
         except Exception as e:
-            logging.error(f"Error sending Telegram message: {e}")
+            logging.debug(f"Error sending Telegram message: {e}")
             return False
     
     def send_photo(self, photo_path: str, caption: str = "") -> bool:
@@ -118,8 +131,17 @@ class TelegramNotifier:
                 logging.error(f"Failed to send Telegram photo: {response.status_code}")
                 return False
                 
+        except requests.exceptions.ConnectionError:
+            logging.warning("Cannot send Telegram photo: No internet connection")
+            return False
+        except requests.exceptions.Timeout:
+            logging.warning("Telegram photo timeout: Network is slow")
+            return False
+        except FileNotFoundError:
+            logging.error(f"Cannot send Telegram photo: File not found: {photo_path}")
+            return False
         except Exception as e:
-            logging.error(f"Error sending Telegram photo: {e}")
+            logging.debug(f"Error sending Telegram photo: {e}")
             return False
     
     def send_fire_alert(self, detection_method: str = "Unknown") -> None:
