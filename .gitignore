@@ -205,3 +205,10 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Fire Detection System - Project specific
+recordings/*
+!recordings/.gitkeep
+logs/*
+!logs/.gitkeep
+alert.wav
