@@ -6,6 +6,7 @@ import time
 import logging
 from threading import Thread
 import numpy as np
+import cv2
 
 try:
     import pygame
@@ -123,7 +124,6 @@ class AlertSystem:
         # Draw red border
         height, width = frame.shape[:2]
         border_thickness = 10
-        import cv2
         cv2.rectangle(overlay, (0, 0), (width, height), (0, 0, 255), border_thickness)
         
         # Draw alert text

@@ -147,6 +147,8 @@ class FireDetector:
             ai_detected, ai_boxes, ai_confidences = self.detect_fire_ai(frame)
         
         # Determine final result based on mode
+        default_cv_confidence = config.FIRE_DETECTION_THRESHOLD
+        
         if config.USE_HYBRID_MODE and self.ai_detector is not None:
             # Hybrid mode: fire detected if EITHER method detects it
             fire_detected = cv_detected or ai_detected
@@ -160,7 +162,7 @@ class FireDetector:
                 final_confidences = ai_confidences
             elif cv_detected:
                 detection_method = "Hybrid (CV)"
-                final_confidences = [config.FIRE_DETECTION_THRESHOLD] * len(cv_boxes)
+                final_confidences = [default_cv_confidence] * len(cv_boxes)
             else:
                 detection_method = "None"
                 final_confidences = []
@@ -174,7 +176,7 @@ class FireDetector:
             # CV only mode (fallback)
             fire_detected = cv_detected
             all_boxes = cv_boxes
-            final_confidences = [config.FIRE_DETECTION_THRESHOLD] * len(cv_boxes)
+            final_confidences = [default_cv_confidence] * len(cv_boxes)
             detection_method = "CV" if cv_detected else "None"
         
         # Confirmation system: need detection in multiple consecutive frames

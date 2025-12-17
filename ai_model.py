@@ -85,10 +85,14 @@ class AIFireDetector:
                     # Check if it's fire-related (fire, smoke, flames)
                     # For pre-trained YOLO, we might detect "fire hydrant" or custom classes
                     # In a production system, you'd use a custom trained model
+                    # 
+                    # NOTE: Standard YOLOv8 pre-trained models don't have fire detection classes.
+                    # This is a placeholder for custom trained models. For production use,
+                    # train a custom model with fire dataset and set AI_MODEL_PATH in config.
                     if confidence >= self.confidence_threshold:
-                        # For demo purposes, we'll detect any high-confidence object
-                        # In reality, you'd train a custom model for fire detection
-                        if 'fire' in class_name or class_id in []:  # Add your fire class IDs
+                        # Check if class name contains fire-related keywords
+                        fire_keywords = ['fire', 'smoke', 'flame']
+                        if any(keyword in class_name.lower() for keyword in fire_keywords):
                             x1, y1, x2, y2 = box.xyxy[0].cpu().numpy().astype(int)
                             fire_boxes.append((x1, y1, x2, y2))
                             fire_confidences.append(confidence)
