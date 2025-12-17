@@ -39,7 +39,7 @@ class FireDetector:
     
     def detect_fire_cv(self, frame: np.ndarray) -> Tuple[bool, List[Tuple[int, int, int, int]]]:
         """
-        Detect fire using traditional Computer Vision techniques
+        Detect fire using traditional Computer Vision techniques with advanced parameters
         
         Args:
             frame: Input frame (BGR format)
@@ -80,11 +80,36 @@ class FireDetector:
             if area >= config.MIN_FIRE_AREA:
                 x, y, w, h = cv2.boundingRect(contour)
                 
-                # Additional validation: check aspect ratio
+                # Advanced validation: check aspect ratio
                 aspect_ratio = float(w) / h if h > 0 else 0
-                if 0.2 < aspect_ratio < 5.0:  # Reasonable aspect ratio
-                    fire_boxes.append((x, y, x + w, y + h))
-                    fire_detected = True
+                if aspect_ratio > config.MAX_ASPECT_RATIO:
+                    continue  # Fire shouldn't be too elongated
+                
+                # Extract region of interest
+                roi = frame[y:y+h, x:x+w]
+                if roi.size == 0:
+                    continue
+                
+                # Check average intensity in fire region
+                roi_gray = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
+                avg_intensity = np.mean(roi_gray)
+                if avg_intensity < config.MIN_INTENSITY:
+                    continue  # Not bright enough for fire
+                
+                # Check saturation in fire region
+                roi_hsv = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
+                avg_saturation = np.mean(roi_hsv[:, :, 1])
+                if avg_saturation < config.MIN_SATURATION:
+                    continue  # Not saturated enough for fire
+                
+                # Check edge density (fire has flickering edges)
+                edges = cv2.Canny(roi_gray, 50, 150)
+                edge_density = np.count_nonzero(edges) / edges.size
+                if edge_density < config.MIN_EDGE_DENSITY:
+                    continue  # Not enough edges for fire
+                
+                fire_boxes.append((x, y, x + w, y + h))
+                fire_detected = True
         
         # Motion/flicker analysis
         if fire_detected and self.prev_gray is not None:

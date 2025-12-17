@@ -13,6 +13,7 @@ from pathlib import Path
 import config
 from fire_detector import FireDetector
 from alert import AlertSystem
+from telegram_notifier import TelegramNotifier
 
 
 class FireDetectionSystem:
@@ -29,6 +30,7 @@ class FireDetectionSystem:
         # Initialize components
         self.detector = FireDetector()
         self.alert_system = AlertSystem()
+        self.telegram = TelegramNotifier()
         
         # Camera
         self.camera = None
@@ -46,6 +48,11 @@ class FireDetectionSystem:
         self.fps_frame_count = 0
         
         logging.info("Fire Detection System initialized")
+        
+        # Send startup notification
+        if config.TELEGRAM_ENABLED:
+            self.telegram.send_message("🔥 <b>Fire Detection System Started</b>\n\nSystem is now monitoring for fire...")
+    
     
     def _setup_logging(self):
         """Setup logging configuration"""
@@ -221,9 +228,18 @@ class FireDetectionSystem:
                 if fire_detected:
                     self.alert_system.trigger_alert()
                     
+                    # Send Telegram notification (with cooldown handled in notifier)
+                    self.telegram.send_fire_alert(detection_method)
+                    
                     # Start recording if not already recording
                     if not self.recording:
                         self.start_recording(frame)
+                        
+                        # Save screenshot and send to Telegram
+                        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                        screenshot_path = os.path.join(config.OUTPUT_DIR, f"fire_alert_{timestamp}.jpg")
+                        cv2.imwrite(screenshot_path, frame)
+                        self.telegram.send_fire_photo(screenshot_path, detection_method)
                     
                     logging.info(f"Fire detected (Method: {detection_method})")
                 else:

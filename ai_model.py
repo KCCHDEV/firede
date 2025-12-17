@@ -40,9 +40,11 @@ class AIFireDetector:
                 self.model = YOLO(model_path)
                 logging.info(f"Loaded custom model from {model_path}")
             else:
-                # Load pre-trained YOLOv8 model
+                # Load pre-trained YOLOv8 model (auto-downloads if not present)
+                # First time run will download ~6MB yolov8n.pt model automatically
+                logging.info("Loading YOLOv8 model (will auto-download if needed)...")
                 self.model = YOLO('yolov8n.pt')  # Nano version for speed
-                logging.info("Loaded pre-trained YOLOv8 model")
+                logging.info("YOLOv8 model loaded successfully")
             
             self.model.to(self.device)
             logging.info(f"Model running on: {self.device}")
